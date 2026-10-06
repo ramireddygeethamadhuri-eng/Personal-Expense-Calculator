@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Expense Calculator · Colorful</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+      margin: 0;
+    }
+
+    .app-container {
+      max-width: 1200px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      border-radius: 2.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35),
+                  inset 0 1px 2px rgba(255, 255, 255, 0.9);
+      padding: 2rem 2rem 2.2rem;
+      border: 2px solid rgba(255, 255, 255, 0.7);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      background: linear-gradient(90deg, #667eea, #764ba2, #f093fb, #f5576c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.8rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 3px solid transparent;
+      border-image: linear-gradient(90deg, #667eea, #f093fb) 1;
+    }
+
+    h1 span {
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 1.1rem;
+      padding: 0.25rem 1rem;
+      border-radius: 40px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border: 2px solid #f093fb;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 800px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .app-container {
+        padding: 1.5rem;
+      }
+      h1 {
+        font-size: 1.8rem;
+      }
+    }
+
+    /* ----- left panel: forms ----- */
+    .input-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.8rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 1.8rem;
+      padding: 1.5rem 1.5rem 1.8rem;
+      box-shadow: 0 10px 25px -8px rgba(102, 126, 234, 0.35),
+                  0 0 0 2px rgba(255, 255, 255, 0.9) inset;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px -10px rgba(102, 126, 234, 0.5);
+    }
+
+    .card h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    /* income card accent */
+    .card:nth-child(1) {
+      border-top: 5px solid #00b894;
+    }
+    .card:nth-child(1) h2 {
+      color: #00b894;
+    }
+
+    /* expense card accent */
+    .card:nth-child(2) {
+      border-top: 5px solid #e17055;
+    }
+    .card:nth-child(2) h2 {
+      color: #e17055;
+    }
+
+    .card h2 i {
+      font-style: normal;
+      font-size: 1.4rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      margin-bottom: 1rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #4a5a7a;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      margin-left: 0.2rem;
+    }
+
+    input, select {
+      padding: 0.85rem 1rem;
+      border-radius: 1.2rem;
+      border: 2px solid #e0e7ff;
+      background: #fafbff;
+      font-size: 1rem;
+      font-family: inherit;
+      color: #1a1f36;
+      transition: all 0.2s;
+      outline: none;
+      width: 100%;
+      font-weight: 500;
+    }
+
+    input:focus, select:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+      background: #ffffff;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 2rem;
+      padding: 0.95rem 1.4rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: inherit;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: #eef3fc;
+      color: #1e3e63;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      text-transform: uppercase;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00b894, #00cec9);
+      color: white;
+      box-shadow: 0 8px 18px -6px rgba(0, 184, 148, 0.6);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #00a884, #00b8b3);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px -8px rgba(0, 184, 148, 0.7);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 4px 10px -4px rgba(0, 184, 148, 0.6);
+    }
+
+    .btn-expense {
+      background: linear-gradient(135deg, #e17055, #fab1a0);
+      color: white;
+      box-shadow: 0 8px 18px -6px rgba(225, 112, 85, 0.6);
+      padding: 0.8rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    .btn-expense:hover {
+      background: linear-gradient(135deg, #d15a3e, #f59a86);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px -8px rgba(225, 112, 85, 0.7);
+    }
+
+    .btn-expense:active {
+      transform: translateY(1px);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #e84393, #fd79a8);
+      color: white;
+      box-shadow: 0 8px 18px -6px rgba(232, 67, 147, 0.5);
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #d63384, #f06090);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px -8px rgba(232, 67, 147, 0.7);
+    }
+
+    .row-buttons {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 0.2rem;
+    }
+
+    .expense-category {
+      display: flex;
+      gap: 0.8rem;
+      align-items: flex-end;
+    }
+
+    .expense-category .form-group {
+      flex: 2;
+      margin-bottom: 0;
+    }
+
+    .expense-category .btn {
+      flex: 0.9;
+      margin-bottom: 1px;
+      height: 3.2rem;
+    }
+
+    /* ----- right panel: summary ----- */
+    .summary-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .stat-card {
+      border-radius: 1.5rem;
+      padding: 1.3rem 1.3rem 1.1rem;
+      box-shadow: 0 10px 25px -8px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+
+    /* Income stat card - green gradient */
+    .stat-grid .stat-card:nth-child(1) {
+      background: linear-gradient(135deg, #a8edea, #fed6e3);
+    }
+    .stat-grid .stat-card:nth-child(1) .stat-label {
+      color: #00897b;
+    }
+    .stat-grid .stat-card:nth-child(1) .stat-value {
+      color: #00695c;
+    }
+
+    /* Expense stat card - orange/pink gradient */
+    .stat-grid .stat-card:nth-child(2) {
+      background: linear-gradient(135deg, #ffecd2, #fcb69f);
+    }
+    .stat-grid .stat-card:nth-child(2) .stat-label {
+      color: #d35400;
+    }
+    .stat-grid .stat-card:nth-child(2) .stat-value {
+      color: #bf360c;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 0.4rem;
+    }
+
+    .stat-value {
+      font-size: 1.9rem;
+      font-weight: 800;
+      line-height: 1.2;
+      word-break: break-word;
+    }
+
+    /* Savings highlight - rainbow gradient */
+    .savings-highlight {
+      background: linear-gradient(90deg, #00b894, #00cec9, #0984e3, #6c5ce7);
+      background-size: 200% 200%;
+      animation: gradientShift 4s ease infinite;
+      color: white;
+      border-radius: 1.5rem;
+      padding: 1.4rem 1.4rem 1.2rem;
+      box-shadow: 0 15px 30px -10px rgba(0, 132, 255, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .savings-highlight .stat-label {
+      color: rgba(255, 255, 255, 0.95);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .savings-highlight .stat-value {
+      color: white;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .savings-highlight .stat-value.negative {
+      color: #ffe0e0;
+      text-shadow: 0 0 12px rgba(255, 80, 80, 0.8);
+    }
+
+    /* category list */
+    .category-list {
+      background: white;
+      border-radius: 1.8rem;
+      padding: 1.3rem 1.5rem 1.5rem;
+      box-shadow: 0 10px 25px -10px rgba(102, 126, 234, 0.35),
+                  0 0 0 2px rgba(255, 255, 255, 0.9) inset;
+    }
+
+    .category-list h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #2d3561;
+      margin-bottom: 1rem;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 2px dashed #dfe6ff;
+      padding-bottom: 0.7rem;
+    }
+
+    .category-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid #f0f4fa;
+    }
+
+    .category-item:last-child {
+      border-bottom: none;
+    }
+
+    .category-name {
+      font-weight: 600;
+      color: #2d4b6e;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .cat-badge {
+      border-radius: 40px;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      color: white;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    /* ── COLORFUL CATEGORY BADGES ── */
+    .cat-badge[data-cat="Food"] {
+      background: linear-gradient(135deg, #f093fb, #f5576c);
+    }
+    .cat-badge[data-cat="Transport"] {
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+    }
+    .cat-badge[data-cat="Education"] {
+      background: linear-gradient(135deg, #43e97b, #38f9d7);
+      color: #064e3b;
+    }
+    .cat-badge[data-cat="Entertainment"] {
+      background: linear-gradient(135deg, #fa709a, #fee140);
+      color: #7a3a00;
+    }
+    .cat-badge[data-cat="Shopping"] {
+      background: linear-gradient(135deg, #a18cd1, #fbc2eb);
+      color: #4a148c;
+    }
+    .cat-badge[data-cat="Bills"] {
+      background: linear-gradient(135deg, #f6d365, #fda085);
+      color: #7c2d12;
+    }
+    .cat-badge[data-cat="Other"] {
+      background: linear-gradient(135deg, #bdc3c7, #2c3e50);
+    }
+
+    .category-amount {
+      font-weight: 800;
+      color: #1d3d5e;
+      font-feature-settings: "tnum";
+    }
+
+    .empty-message {
+      color: #8b9bb0;
+      font-style: italic;
+      text-align: center;
+      padding: 1rem 0 0.4rem;
+      font-size: 0.95rem;
+    }
+
+    .expense-list-container {
+      max-height: 180px;
+      overflow-y: auto;
+      padding-right: 0.3rem;
+    }
+
+    .expense-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      padding: 0.45rem 0.2rem;
+      border-bottom: 1px solid #eef3fc;
+    }
+
+    .expense-item:last-child {
+      border-bottom: none;
+    }
+
+    .expense-desc {
+      font-weight: 500;
+      color: #3d5575;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .expense-tag {
+      font-size: 0.65rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 40px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 0.3px;
+    }
+
+    /* same colors for the small tags in the recent list */
+    .expense-tag[data-cat="Food"] { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .expense-tag[data-cat="Transport"] { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .expense-tag[data-cat="Education"] { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #064e3b; }
+    .expense-tag[data-cat="Entertainment"] { background: linear-gradient(135deg, #fa709a, #fee140); color: #7a3a00; }
+    .expense-tag[data-cat="Shopping"] { background: linear-gradient(135deg, #a18cd1, #fbc2eb); color: #4a148c; }
+    .expense-tag[data-cat="Bills"] { background: linear-gradient(135deg, #f6d365, #fda085); color: #7c2d12; }
+    .expense-tag[data-cat="Other"] { background: linear-gradient(135deg, #bdc3c7, #2c3e50); }
+
+    .expense-amt {
+      font-weight: 800;
+      color: #1f3a5f;
+      white-space: nowrap;
+    }
+
+    /* subtle scroll */
+    .expense-list-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .expense-list-container::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #667eea, #f093fb);
+      border-radius: 10px;
+    }
+
+    .expense-list-container::-webkit-scrollbar-track {
+      background: #f0f4fa;
+      border-radius: 10px;
+    }
+
+    .footer-note {
+      font-size: 0.8rem;
+      text-align: center;
+      color: #6b7a99;
+      margin-top: 1.5rem;
+      letter-spacing: 0.3px;
+      font-weight: 500;
+    }
+
+    .currency-sign {
+      font-weight: 500;
+      font-size: 0.9rem;
+      margin-left: 2px;
+    }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <h1>
+    💰 Personal Expense Calculator
+    <span>colorful ✨</span>
+  </h1>
+
+  <div class="dashboard">
+    <!-- LEFT: INPUT FORMS -->
+    <div class="input-panel">
+      <!-- Income card -->
+      <div class="card">
+        <h2><i>📈</i> Add income</h2>
+        <div class="form-group">
+          <label for="incomeDesc">Description (optional)</label>
+          <input type="text" id="incomeDesc" placeholder="e.g. Pocket money, Salary" value="Pocket money">
+        </div>
+        <div class="form-group">
+          <label for="incomeAmount">Amount (₹)</label>
+          <input type="number" id="incomeAmount" placeholder="0.00" min="0" step="0.01" value="5000">
+        </div>
+        <button class="btn btn-primary" id="addIncomeBtn">+ Add income</button>
+      </div>
+
+      <!-- Expense card -->
+      <div class="card">
+        <h2><i>📉</i> Add expense</h2>
+        <div class="form-group">
+          <label for="expenseDesc">Description</label>
+          <input type="text" id="expenseDesc" placeholder="e.g. Lunch, Books" value="Lunch">
+        </div>
+        <div class="expense-category">
+          <div class="form-group">
+            <label for="expenseCategory">Category</label>
+            <select id="expenseCategory">
+              <option value="Food">🍔 Food</option>
+              <option value="Transport">🚌 Transport</option>
+              <option value="Education">📚 Education</option>
+              <option value="Entertainment">🎬 Entertainment</option>
+              <option value="Shopping">🛍️ Shopping</option>
+              <option value="Bills">🧾 Bills</option>
+              <option value="Other">📦 Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="expenseAmount">Amount (₹)</label>
+            <input type="number" id="expenseAmount" placeholder="0.00" min="0" step="0.01" value="250">
+          </div>
+          <button class="btn btn-expense" id="addExpenseBtn">+ Add</button>
+        </div>
+      </div>
+
+      <!-- quick actions -->
+      <div class="card" style="padding: 1.2rem 1.5rem;">
+        <div class="row-buttons">
+          <button class="btn btn-danger" id="resetDataBtn" style="flex:1;">🗑️ Reset all data</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: SUMMARY & REPORT -->
+    <div class="summary-panel">
+      <!-- stat cards -->
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total income</div>
+          <div class="stat-value" id="totalIncomeDisplay">₹0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total expenses</div>
+          <div class="stat-value" id="totalExpenseDisplay">₹0</div>
+        </div>
+      </div>
+
+      <!-- savings highlight -->
+      <div class="savings-highlight">
+        <div class="stat-label">Your savings</div>
+        <div class="stat-value" id="savingsDisplay">₹0</div>
+      </div>
+
+      <!-- expense categories breakdown -->
+      <div class="category-list">
+        <h3>
+          <span>📊 Expense categories</span>
+          <span style="font-size: 0.8rem; font-weight: 600; color: #6d85a4;" id="categoryCount">0 categories</span>
+        </h3>
+        <div id="categoryBreakdown">
+          <div class="empty-message">No expenses yet — add some to see breakdown.</div>
+        </div>
+      </div>
+
+      <!-- recent expense list -->
+      <div class="category-list" style="padding-top: 0.8rem;">
+        <h3 style="margin-bottom: 0.6rem;">
+          <span>🧾 Recent expenses</span>
+          <span style="font-size: 0.8rem; font-weight: 600; color: #6d85a4;" id="expenseCount">0 items</span>
+        </h3>
+        <div id="expenseListContainer" class="expense-list-container">
+          <div class="empty-message">No expenses recorded.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-note">Track income, categorize expenses & see your savings instantly.</div>
+</div>
+
+<script>
+  (function() {
+    // ---------- STATE ----------
+    let incomes = [];            // { description, amount }
+    let expenses = [];          // { description, amount, category }
+
+    // ---------- DOM ELEMENTS ----------
+    const incomeDescInput = document.getElementById('incomeDesc');
+    const incomeAmountInput = document.getElementById('incomeAmount');
+    const addIncomeBtn = document.getElementById('addIncomeBtn');
+
+    const expenseDescInput = document.getElementById('expenseDesc');
+    const expenseAmountInput = document.getElementById('expenseAmount');
+    const expenseCategorySelect = document.getElementById('expenseCategory');
+    const addExpenseBtn = document.getElementById('addExpenseBtn');
+
+    const resetDataBtn = document.getElementById('resetDataBtn');
+
+    const totalIncomeDisplay = document.getElementById('totalIncomeDisplay');
+    const totalExpenseDisplay = document.getElementById('totalExpenseDisplay');
+    const savingsDisplay = document.getElementById('savingsDisplay');
+
+    const categoryBreakdownDiv = document.getElementById('categoryBreakdown');
+    const expenseListContainer = document.getElementById('expenseListContainer');
+    const categoryCountSpan = document.getElementById('categoryCount');
+    const expenseCountSpan = document.getElementById('expenseCount');
+
+    // ---------- UTILS ----------
+    function formatCurrency(amount) {
+      return '₹' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    // escape HTML to prevent XSS
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // update all UI components
+    function refreshUI() {
+      // 1. calculate totals
+      const totalIncome = incomes.reduce((sum, inc) => sum + inc.amount, 0);
+      const totalExpense = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+      const savings = totalIncome - totalExpense;
+
+      // 2. update stat displays
+      totalIncomeDisplay.textContent = formatCurrency(totalIncome);
+      totalExpenseDisplay.textContent = formatCurrency(totalExpense);
+
+      savingsDisplay.textContent = formatCurrency(savings);
+      if (savings >= 0) {
+        savingsDisplay.classList.remove('negative');
+      } else {
+        savingsDisplay.classList.add('negative');
+      }
+
+      // 3. Category breakdown
+      const categoryMap = new Map();
+      expenses.forEach(exp => {
+        const cat = exp.category || 'Other';
+        const prev = categoryMap.get(cat) || 0;
+        categoryMap.set(cat, prev + exp.amount);
+      });
+
+      const sortedCategories = Array.from(categoryMap.entries()).sort((a, b) => b[1] - a[1]);
+      const categoryCount = sortedCategories.length;
+      categoryCountSpan.textContent = categoryCount === 1 ? '1 category' : `${categoryCount} categories`;
+
+      if (sortedCategories.length === 0) {
+        categoryBreakdownDiv.innerHTML = '<div class="empty-message">No expenses yet — add some to see breakdown.</div>';
+      } else {
+        let html = '';
+        sortedCategories.forEach(([cat, amt]) => {
+          const percentage = totalExpense > 0 ? ((amt / totalExpense) * 100).toFixed(0) : 0;
+          html += `
+            <div class="category-item">
+              <div class="category-name">
+                <span class="cat-badge" data-cat="${escapeHtml(cat)}">${percentage}%</span>
+                ${escapeHtml(cat)}
+              </div>
+              <div class="category-amount">${formatCurrency(amt)}</div>
+            </div>
+          `;
+        });
+        categoryBreakdownDiv.innerHTML = html;
+      }
+
+      // 4. Recent expenses
+      const recentExpenses = [...expenses].reverse();
+      const expenseCount = expenses.length;
+      expenseCountSpan.textContent = expenseCount === 1 ? '1 item' : `${expenseCount} items`;
+
+      if (recentExpenses.length === 0) {
+        expenseListContainer.innerHTML = '<div class="empty-message">No expenses recorded.</div>';
+      } else {
+        let listHtml = '';
+        recentExpenses.slice(0, 15).forEach(exp => {
+          listHtml += `
+            <div class="expense-item">
+              <span class="expense-desc">
+                ${escapeHtml(exp.description || '—')}
+                <span class="expense-tag" data-cat="${escapeHtml(exp.category)}">${escapeHtml(exp.category)}</span>
+              </span>
+              <span class="expense-amt">${formatCurrency(exp.amount)}</span>
+            </div>
+          `;
+        });
+        expenseListContainer.innerHTML = listHtml;
+      }
+    }
+
+    // ---------- EVENT HANDLERS ----------
+    function handleAddIncome() {
+      const description = incomeDescInput.value.trim() || 'Income';
+      const amountRaw = incomeAmountInput.value.trim();
+      const amount = parseFloat(amountRaw);
+
+      if (isNaN(amount) || amount <= 0) {
+        alert('Please enter a valid positive amount for income.');
+        return;
+      }
+
+      incomes.push({ description, amount });
+      incomeDescInput.value = '';
+      incomeAmountInput.value = '';
+      refreshUI();
+    }
+
+    function handleAddExpense() {
+      const description = expenseDescInput.value.trim() || 'Expense';
+      const amountRaw = expenseAmountInput.value.trim();
+      const amount = parseFloat(amountRaw);
+      const category = expenseCategorySelect.value;
+
+      if (isNaN(amount) || amount <= 0) {
+        alert('Please enter a valid positive amount for expense.');
+        return;
+      }
+
+      expenses.push({ description, amount, category });
+      expenseDescInput.value = '';
+      expenseAmountInput.value = '';
+      refreshUI();
+    }
+
+    function handleResetData() {
+      if (incomes.length === 0 && expenses.length === 0) return;
+      if (confirm('Are you sure you want to delete all income and expense data?')) {
+        incomes = [];
+        expenses = [];
+        refreshUI();
+        incomeDescInput.value = 'Pocket money';
+        incomeAmountInput.value = '';
+        expenseDescInput.value = '';
+        expenseAmountInput.value = '';
+        expenseCategorySelect.value = 'Food';
+      }
+    }
+
+    // ---------- DEMO DATA ----------
+    function loadDemoData() {
+      incomes = [
+        { description: 'Pocket money', amount: 5000 },
+        { description: 'Freelance project', amount: 2000 }
+      ];
+      expenses = [
+        { description: 'Lunch', amount: 250, category: 'Food' },
+        { description: 'Bus pass', amount: 500, category: 'Transport' },
+        { description: 'Textbooks', amount: 1200, category: 'Education' },
+        { description: 'Movie night', amount: 400, category: 'Entertainment' },
+        { description: 'New shoes', amount: 900, category: 'Shopping' },
+        { description: 'Electricity bill', amount: 350, category: 'Bills' },
+        { description: 'Stationery', amount: 150, category: 'Education' }
+      ];
+      incomeDescInput.value = 'Pocket money';
+      incomeAmountInput.value = '5000';
+      expenseDescInput.value = 'Lunch';
+      expenseAmountInput.value = '250';
+      expenseCategorySelect.value = 'Food';
+    }
+
+    // ---------- SETUP ----------
+    function init() {
+      loadDemoData();
+      addIncomeBtn.addEventListener('click', handleAddIncome);
+      addExpenseBtn.addEventListener('click', handleAddExpense);
+      resetDataBtn.addEventListener('click', handleResetData);
+
+      incomeAmountInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); handleAddIncome(); }
+      });
+      expenseAmountInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); handleAddExpense(); }
+      });
+      incomeDescInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); handleAddIncome(); }
+      });
+      expenseDescInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); handleAddExpense(); }
+      });
+
+      refreshUI();
+    }
+
+    init();
+  })();
+</script>
+</body>
+</html>
